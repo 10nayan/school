@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils import timezone
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
 
 class CustomUserManager(BaseUserManager):
@@ -20,23 +20,25 @@ class CustomUserManager(BaseUserManager):
     def create_superuser(self, username, password, email, **extra_fields):
         """Create a superuser with role admin"""
         extra_fields.setdefault('role', 'admin')
-        return self.create_user(email, username, password, extra_fields)
+        extra_fields.setdefault('is_stuff', True)
+        extra_fields.setdefault('is_superuser', True)
+        return self.create_user(username, email, password, **extra_fields)
 
 
-class User(AbstractBaseUser):
+class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     username = models.CharField(max_length=255, unique=True)
     password = models.CharField(max_length=255)
     role = models.CharField(max_length=30)
+    is_active = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
     created_at = models.DateTimeField(default=timezone.now)
 
-    object = CustomUserManager()
+    objects = CustomUserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['USERNAME']
+    REQUIRED_FIELDS = ['username']
 
     def __str__(self):
         return self.email
-
-
-
