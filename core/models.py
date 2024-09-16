@@ -65,6 +65,7 @@ class UserProfile(models.Model):
 class SchoolClass(models.Model):
     name = models.CharField(max_length=30, null=False, blank=False)
     section = models.CharField(max_length=30, null=True, blank=True)
+    subjects = models.ManyToManyField('Subject', related_name='classes')
 
     def __str__(self):
         return f'{self.name}-{self.section}'
