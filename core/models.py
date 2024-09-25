@@ -125,7 +125,7 @@ class Subject(models.Model):
     department = models.ForeignKey('Department', on_delete=models.SET_NULL, null=True, related_name='subject_department')
 
     def __str__(self):
-        return f'Subject {self.name}'
+        return f'Subject {self.code} {self.name}'
 
 
 class Teacher(models.Model):
