@@ -7,22 +7,22 @@ from .models import (
 
 class CustomUserAdmin(UserAdmin):
     model = User
-    list_display = ['email', 'username', 'role', 'is_active', 'first_name', 'last_name']
+    list_display = ['email', 'username', 'is_active', 'first_name', 'last_name']
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-        ('Personal Info', {'fields': ('username', 'role')}),
-        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser')}),
+        ('Personal Info', {'fields': ('username', 'first_name', 'last_name', 'middle_name')}),
+        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
         ('Important dates', {'fields': ('last_login',)}),
     )
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'username', 'first_name', 'last_name', 'middle_name', 'role', 'password1', 'password2', 'is_active', 'is_staff', 'is_superuser'),
+            'fields': ('email', 'username', 'first_name', 'last_name', 'middle_name', 'password1', 'password2', 'is_active', 'is_staff', 'is_superuser'),
         }),
     )
     search_fields = ['username', 'email']
     ordering = ('email',)
-    filter_horizontal = []  # Remove references to groups and user_permissions
+    filter_horizontal = ('groups', 'user_permissions')  # Ensures groups can be selected in the form
 
 # Admin class for UserProfile
 class UserProfileAdmin(admin.ModelAdmin):
