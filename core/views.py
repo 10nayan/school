@@ -3,7 +3,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 from .models import Department, SchoolClass, Subject
 from .serializers import DepartmentSerializer, SchoolClassSerializer, SubjectSerializer
-from .services import department_service, subject_service, class_service
+from .services.class_service import SchoolClassService  # Updated import
+from .services import department_service, subject_service
 from .pydantic import (
     DepartmentCreate, DepartmentUpdate,
     SubjectCreate, SubjectUpdate,
@@ -65,7 +66,7 @@ class SubjectViewset(viewsets.ModelViewSet):
 
 class SchoolClassViewset(viewsets.ModelViewSet):
     serializer_class = SchoolClassSerializer
-    queryset = class_service.get_all_classes()
+    queryset = SchoolClassService.get_all_classes()
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['name', 'section', 'subjects']
     search_fields = ['name', 'section']
@@ -74,16 +75,16 @@ class SchoolClassViewset(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         data = SchoolClassCreate(**request.data)
-        school_class = class_service.create_class(data)
+        school_class = SchoolClassService.create_class(data)
         serializer = self.get_serializer(school_class)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def update(self, request, *args, **kwargs):
         data = SchoolClassUpdate(**request.data)
-        school_class = class_service.update_class(kwargs['pk'], data)
+        school_class = SchoolClassService.update_class(kwargs['pk'], data)
         serializer = self.get_serializer(school_class)
         return Response(serializer.data)
 
     def destroy(self, request, *args, **kwargs):
-        class_service.delete_class(kwargs['pk'])
+        SchoolClassService.delete_class(kwargs['pk'])
         return Response(status=status.HTTP_204_NO_CONTENT)
